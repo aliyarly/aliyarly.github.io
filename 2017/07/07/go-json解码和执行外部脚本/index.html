@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>go-json解码和执行外部脚本 | aliyarly</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="go 解码json字符串1import encoding/json Go对于json有官方自己的解析包，先谈一下json的解码方式。解码的api如下：1func Unmarshal (data []byte, v interface&amp;#123;&amp;#125;) 解析到结构体(最常用的方式)需要注意的是： （1）解析到结构体时只能解析到结构体中的首字母大写的变量 （2）结构体中数值对应json中的ke">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go-json解码和执行外部脚本">
+<meta property="og:url" content="http://yoursite.com/2017/07/07/go-json解码和执行外部脚本/index.html">
+<meta property="og:site_name" content="aliyarly">
+<meta property="og:description" content="go 解码json字符串1import encoding/json Go对于json有官方自己的解析包，先谈一下json的解码方式。解码的api如下：1func Unmarshal (data []byte, v interface&amp;#123;&amp;#125;) 解析到结构体(最常用的方式)需要注意的是： （1）解析到结构体时只能解析到结构体中的首字母大写的变量 （2）结构体中数值对应json中的ke">
+<meta property="og:updated_time" content="2017-07-07T03:33:01.264Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="go-json解码和执行外部脚本">
+<meta name="twitter:description" content="go 解码json字符串1import encoding/json Go对于json有官方自己的解析包，先谈一下json的解码方式。解码的api如下：1func Unmarshal (data []byte, v interface&amp;#123;&amp;#125;) 解析到结构体(最常用的方式)需要注意的是： （1）解析到结构体时只能解析到结构体中的首字母大写的变量 （2）结构体中数值对应json中的ke">
+  
+    <link rel="alternate" href="/atom.xml" title="aliyarly" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">aliyarly</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-go-json解码和执行外部脚本" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/07/07/go-json解码和执行外部脚本/" class="article-date">
+  <time datetime="2017-07-07T03:32:26.000Z" itemprop="datePublished">2017-07-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      go-json解码和执行外部脚本
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="go-解码json字符串"><a href="#go-解码json字符串" class="headerlink" title="go 解码json字符串"></a>go 解码json字符串</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">import encoding/json</div></pre></td></tr></table></figure>
+<p>Go对于json有官方自己的解析包，先谈一下json的解码方式。解码的api如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">func Unmarshal (data []byte, v interface&#123;&#125;)</div></pre></td></tr></table></figure></p>
+<h3 id="解析到结构体-最常用的方式"><a href="#解析到结构体-最常用的方式" class="headerlink" title="解析到结构体(最常用的方式)"></a>解析到结构体(最常用的方式)</h3><p>需要注意的是：</p>
+<p>（1）解析到结构体时只能解析到结构体中的首字母大写的变量</p>
+<p>（2）结构体中数值对应json中的key是大小写不敏感的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">type T struct &#123;</div><div class="line">    Cmd string</div><div class="line">    Args string</div><div class="line">　　&#125;</div><div class="line">for &#123;</div><div class="line">    var msg T</div><div class="line"></div><div class="line">    err := websocket.JSON.Receive(we.ws, &amp;msg)</div><div class="line">    if err != nil &#123;</div><div class="line">        //err == EOF if ws close connection from client</div><div class="line">        we.log.Debug(&quot;websocket&quot;, &quot;Cannot receive data from client: %s&quot;, err)</div><div class="line">        if err != io.EOF &#123;</div><div class="line">            we.log.Debug(&quot;websocket&quot;, &quot;Cannot receive: %s&quot;, err)</div><div class="line">        &#125;</div><div class="line">        break</div><div class="line">    &#125;</div><div class="line">    we.log.Debug(&quot;websocket&quot;, &quot;receive json data is %+v, %s, %s&quot;, msg, msg.Cmd, msg.Args)</div><div class="line">    if strings.Contains(msg.Cmd, &quot;flash&quot;) || strings.Contains(msg.Cmd, &quot;run&quot;)  &#123;</div><div class="line">        we.log.Associate(&quot;command&quot;, msg.Cmd)</div><div class="line">        process = we.start_cmd_process(msg.Cmd)</div><div class="line">        break</div><div class="line">    &#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h3 id="解析到空的接口"><a href="#解析到空的接口" class="headerlink" title="解析到空的接口"></a>解析到空的接口</h3><p>需要注意的是：</p>
+<p>（1）json中的数字解码到map中统一是float64类型，如果实际中采用其它类型需要手动转换</p>
+<p>（2）map中对应json的key是大小写敏感的，同时也没有结构体中要求的首字母大写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">package main </div><div class="line"></div><div class="line">import (</div><div class="line">    &quot;encoding/json&quot;</div><div class="line">    &quot;fmt&quot;</div><div class="line">)</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">    str := `&#123;&quot;changes&quot;: [&#123;&quot;armid&quot;:3,&quot;Index&quot;:5&#125;, &#123;&quot;armid&quot;:3,&quot;Index&quot;:6&#125;]&#125;`</div><div class="line">    var msg map[string]interface&#123;&#125;</div><div class="line">    err := json.Unmarshal([]byte(str), &amp;msg)</div><div class="line">    if err!=nil &#123;</div><div class="line">        fmt.Println(&quot;fuck&quot;,err)</div><div class="line">    &#125;</div><div class="line">    fmt.Println(msg)</div><div class="line">    </div><div class="line">    changes,ok := msg[&quot;changes&quot;].([](interface&#123;&#125;))</div><div class="line">    if !ok &#123;</div><div class="line">        fmt.Println(&quot;Can&apos;t convert msg to []interface&quot;)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    for _ ,ichange := range changes &#123;</div><div class="line">        change, ok := ichange.(map[string]interface&#123;&#125;)</div><div class="line">          if !ok &#123;</div><div class="line">              fmt.Println(&quot;cant convert ichange to map[string]interface&#123;&#125;&quot;)</div><div class="line">          &#125;</div><div class="line">        Index, ok := change[&quot;Index&quot;].(float64)</div><div class="line">        if !ok &#123;    </div><div class="line">            fmt.Println(&quot;cant convert Index to float64&quot;)</div><div class="line">        &#125;</div><div class="line">        armid,ok := change[&quot;armid&quot;].(float64)</div><div class="line">        if !ok &#123;    </div><div class="line">            fmt.Println(&quot;cant convert armid to float&quot;)</div><div class="line">        &#125;</div><div class="line">        fmt.Println(Index,armid)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="go-执行外部的python脚本"><a href="#go-执行外部的python脚本" class="headerlink" title="go 执行外部的python脚本"></a>go 执行外部的python脚本</h2><ol>
+<li><p>首先确保python脚本是有权限的，并且可以执行的，即在脚本的首行指定其解释器与运行环境,例如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env python2</div></pre></td></tr></table></figure>
+</li>
+<li><p>执行脚本，采用内置的<code>exec</code><a href="https://golang.org/pkg/os/exec" target="_blank" rel="external">https://golang.org/pkg/os/exec</a>模块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line">import (</div><div class="line">    &quot;io&quot;</div><div class="line">    &quot;os/exec&quot;</div><div class="line">    &quot;fmt&quot;</div><div class="line">)</div><div class="line"></div><div class="line">type LaunchedProcess struct &#123;</div><div class="line">	cmd    *exec.Cmd</div><div class="line">	stdin  io.WriteCloser</div><div class="line">	stdout io.ReadCloser</div><div class="line">	stderr io.ReadCloser</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 对外部执行系统命令的简单封装，用于异步执行，并将重定向输入，输出和错误信息</div><div class="line">func launchCmd(commandName string, commandArgs []string, env []string) (*LaunchedProcess, error) &#123;</div><div class="line">    // 返回可执行的命令行结构变量</div><div class="line">	cmd := exec.Command(commandName, commandArgs...)</div><div class="line">	cmd.Env = env</div><div class="line"></div><div class="line">	stdout, err := cmd.StdoutPipe()</div><div class="line">	if err != nil &#123;</div><div class="line">	  return nil, err</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	stderr, err := cmd.StderrPipe()</div><div class="line">	if err != nil &#123;</div><div class="line">	  return nil, err</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	stdin, err := cmd.StdinPipe()</div><div class="line">	if err != nil &#123;</div><div class="line">	  return nil, err</div><div class="line">	&#125;</div><div class="line">    //开始执行命令，并不等待改命令执行完毕，即出发执行便返回</div><div class="line">    // cmd.Run()会等待命令执行完毕</div><div class="line">	err = cmd.Start()</div><div class="line">	if err != nil &#123;</div><div class="line">	  return nil, err</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	return &amp;LaunchedProcess&#123;cmd, stdin, stdout, stderr&#125;, err</div><div class="line">&#125;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">  // 待执行脚本的绝对路径或者相对改应用的相对路径</div><div class="line">  command := &quot;/home/saic/Desktop/lyn/autotest/cheji-platform/run.py&quot;</div><div class="line">  CommandArgs := []string&#123;&#125;</div><div class="line">  env := []string&#123;&#125;</div><div class="line">  launched, err := launchCmd(command, CommandArgs, env)</div><div class="line">  if err != nil &#123;</div><div class="line">    fmt.Printf(&quot;Could not launch process&quot;)</div><div class="line">  &#125;</div><div class="line">  fmt.Printf(&quot;Process opend is %d&quot;, launched.cmd.Process.Pid)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/07/07/go-json解码和执行外部脚本/" data-id="cj4tb3atg0000xqhqk43bjmdt" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/07/04/python基本数据结构和底层实现原理/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">python基本数据结构和底层实现原理</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/07/go-json解码和执行外部脚本/">go-json解码和执行外部脚本</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/04/python基本数据结构和底层实现原理/">python基本数据结构和底层实现原理</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/03/python-Redis的pub-sub相关/">python Redis的pub/sub相关</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/03/python-编码规范/">python_编码规范</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 aliyarly<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
