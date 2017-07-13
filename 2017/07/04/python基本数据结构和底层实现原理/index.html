@@ -5,13 +5,16 @@
   
   <title>python基本数据结构和底层实现原理 | aliyarly</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="article">
+  <meta name="description" content="List的实现原理List 是一种元素个数和数据可变的线性表，可以加入和删除，在各种操作中维持已有元素的顺序．线性表：具有元素顺序关系的某类数据对象的集合，支持创建，索引，动态改变表，两个表的操作 线性表的实现：  顺序表：将表中元素顺序底存放在一大块连续的存储区域，元素间的关系由它们的存储顺序自然表示 链接表：将表元素存放在通过链接构造起来的一系列的存储块里，一般存在单链表，循环单链表，双链表">
+<meta property="og:type" content="article">
 <meta property="og:title" content="python基本数据结构和底层实现原理">
 <meta property="og:url" content="http://yoursite.com/2017/07/04/python基本数据结构和底层实现原理/index.html">
 <meta property="og:site_name" content="aliyarly">
-<meta property="og:updated_time" content="2017-07-04T01:49:07.365Z">
+<meta property="og:description" content="List的实现原理List 是一种元素个数和数据可变的线性表，可以加入和删除，在各种操作中维持已有元素的顺序．线性表：具有元素顺序关系的某类数据对象的集合，支持创建，索引，动态改变表，两个表的操作 线性表的实现：  顺序表：将表中元素顺序底存放在一大块连续的存储区域，元素间的关系由它们的存储顺序自然表示 链接表：将表元素存放在通过链接构造起来的一系列的存储块里，一般存在单链表，循环单链表，双链表">
+<meta property="og:updated_time" content="2017-07-08T08:43:46.363Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python基本数据结构和底层实现原理">
+<meta name="twitter:description" content="List的实现原理List 是一种元素个数和数据可变的线性表，可以加入和删除，在各种操作中维持已有元素的顺序．线性表：具有元素顺序关系的某类数据对象的集合，支持创建，索引，动态改变表，两个表的操作 线性表的实现：  顺序表：将表中元素顺序底存放在一大块连续的存储区域，元素间的关系由它们的存储顺序自然表示 链接表：将表元素存放在通过链接构造起来的一系列的存储块里，一般存在单链表，循环单链表，双链表">
   
     <link rel="alternate" href="/atom.xml" title="aliyarly" type="application/atom+xml">
   
@@ -82,11 +85,41 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h1 id="List的实现原理"><a href="#List的实现原理" class="headerlink" title="List的实现原理"></a>List的实现原理</h1><h2 id="List-是一种元素个数和数据可变的线性表，可以加入和删除，在各种操作中维持已有元素的顺序．"><a href="#List-是一种元素个数和数据可变的线性表，可以加入和删除，在各种操作中维持已有元素的顺序．" class="headerlink" title="List 是一种元素个数和数据可变的线性表，可以加入和删除，在各种操作中维持已有元素的顺序．"></a>List 是一种元素个数和数据可变的线性表，可以加入和删除，在各种操作中维持已有元素的顺序．</h2><p>线性表：具有元素顺序关系的某类数据对象的集合，支持创建，索引，动态改变表，两个表的操作</p>
+<p>线性表的实现：</p>
+<ol>
+<li><code>顺序表</code>：将表中元素顺序底存放在一大块连续的存储区域，元素间的关系由它们的存储顺序自然表示</li>
+<li><code>链接表</code>：将表元素存放在通过链接构造起来的一系列的存储块里，一般存在单链表，循环单链表，双链表</li>
+</ol>
+<p>顺序表结构：</p>
+<ol>
+<li><p>一体式结构:将表的全局对象（表的容量max和当前已存储的元素个数num）和数据存储区以连续的方式放置在一块连续的存储区</p>
+</li>
+<li><p>分离式结构：　表对象只保存容量和元素个数，以及指向存储区域的链接引用对象，使得两者的存储相分离，通过链接来连接表对象和存储数据对象（创建管理较复杂）</p>
+</li>
+</ol>
+<p>基于分离式线性表的存储区扩容：</p>
+<ul>
+<li>申请一块更大的元素存储区域 </li>
+<li>把原先表中的元素复制到新的存储区域</li>
+<li>改变表对象的元素区链接</li>
+<li>实际加入新的元素</li>
+</ul>
+<h2 id="python的list的实际策略："><a href="#python的list的实际策略：" class="headerlink" title="python的list的实际策略："></a>python的list的实际策略：</h2><pre><code>List 采用分离式技术实现的动态顺序表
+</code></pre><p>　　在建立空表或者很小的表的时候，系统分配一块能够容纳８个元素的存储区域，在执行插入操作时，如果元素区满就换一块４倍大的存储区域，但是如果表很大时，换存储去时容量加倍<br>，后面减少倍数，是为了避免出现过多空闲的存储位置．</p>
+<h2 id="list操作的基本性质"><a href="#list操作的基本性质" class="headerlink" title="list操作的基本性质"></a>list操作的基本性质</h2><p>len()的时间复杂度为Ｏ（１）</p>
+<p>元素按索引访问和赋值，尾端加入和删除时间复杂度为Ｏ（１），根据相应的索引，能够直接计算出相应的内存地址</p>
+<p>一般位置元素的加入，切片，拼接的时间复杂度Ｏ（n）</p>
+<p>特殊：　clear(),reverse(),sort(排序算法相关)</p>
+<h1 id="Turple的实现原理"><a href="#Turple的实现原理" class="headerlink" title="Turple的实现原理"></a>Turple的实现原理</h1><h2 id="元素数据不可变的线性表，一旦创建就不能更改，具有顺序结构"><a href="#元素数据不可变的线性表，一旦创建就不能更改，具有顺序结构" class="headerlink" title="元素数据不可变的线性表，一旦创建就不能更改，具有顺序结构"></a>元素数据不可变的线性表，一旦创建就不能更改，具有顺序结构</h2><h2 id="python的turple的实现策略："><a href="#python的turple的实现策略：" class="headerlink" title="python的turple的实现策略："></a>python的turple的实现策略：</h2><p>　　Turple采用<code>一体式结构的线性表</code>，按建立时确定的元素个数来分配内存，一旦创建就不能进行扩容</p>
+<h1 id="String的实现原理"><a href="#String的实现原理" class="headerlink" title="String的实现原理"></a>String的实现原理</h1><h2 id="字符串是字符的线性序列，采用线性表的各种实现技术实现"><a href="#字符串是字符的线性序列，采用线性表的各种实现技术实现" class="headerlink" title="字符串是字符的线性序列，采用线性表的各种实现技术实现"></a>字符串是字符的线性序列，采用线性表的各种实现技术实现</h2><h2 id="python的str的实现策略："><a href="#python的str的实现策略：" class="headerlink" title="python的str的实现策略："></a>python的str的实现策略：</h2><p>字符串是不可变的类型，采用<code>一体式顺序表实现</code></p>
+<p>python语言的正则表达式的使用相关，用于进行相应的字符串的匹配和搜索相关<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">import re</div></pre></td></tr></table></figure></p>
+<p># </p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/07/04/python基本数据结构和底层实现原理/" data-id="cj4tgfapk000278hqr9duyp8z" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/07/04/python基本数据结构和底层实现原理/" data-id="cj52eurb100025ahqhhxkrppc" class="article-share-link">Share</a>
       
       
     </footer>
@@ -144,6 +177,10 @@
       <ul>
         
           <li>
+            <a href="/2017/07/13/python-参数传递方式/">python_参数传递方式</a>
+          </li>
+        
+          <li>
             <a href="/2017/07/07/python-迭代器/">python-迭代器</a>
           </li>
         
@@ -157,10 +194,6 @@
         
           <li>
             <a href="/2017/07/03/python-Redis的pub-sub相关/">python Redis的pub/sub相关</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/03/python-编码规范/">python_编码规范</a>
           </li>
         
       </ul>
